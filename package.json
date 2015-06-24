@@ -1,0 +1,17 @@
+{
+  "name": "sfcli",
+  "version": "1.0.0",
+  "description": "A command line Force.com CRUD script using the Tooling API",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "preferGlobal": true,
+  "bin": {
+    "sfcli": "index.js"
+  },
+  "devDependencies": {
+    "lodash": "^3.9.3"
+  }
+}
