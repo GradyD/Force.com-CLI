@@ -31,9 +31,7 @@ http.request(options, callback).end();
 // THE CODE LOOKS GOOD AND JUST NEEDS MINOR
 // ADJUSTMENTS FOR OUR USE CASE
 
-/*****************************
- * constants
- *****************************/
+// constants
 
 var AUTH_ENDPOINT      = 'https://login.salesforce.com/services/oauth2/authorize';
 var TEST_AUTH_ENDPOINT = 'https://test.salesforce.com/services/oauth2/authorize';
@@ -47,15 +45,8 @@ var API_VERSIONS       = [
   'v30.0', 'v31.0', 'v32.0', 'v33.0'
 ];
 
-/*****************************
- * connection object
- *****************************/
-
-// This should be removed once all of lodash is removed
-var _ = require('lodash');
-
+// connection method
 Connection = function(opts) {
-  var self = this;
 
   opts = (opts || {}, {
     clientId:         null,
@@ -83,16 +74,6 @@ Connection = function(opts) {
   opts.environment = opts.environment.toLowerCase();
   opts.mode = opts.mode.toLowerCase();
 
-  // console.log(self);
-  // self = _.assign(this, opts);
-
-  // console.log(self);
-
-  console.log(opts);
-  // var self = opts;
-
-  // console.log(self);
-
   // validate options
   if(opts.clientId) throw new Error('invalid or missing clientId');
   if(opts.redirectUri) throw new Error('invalid or missing redirectUri');
@@ -101,44 +82,21 @@ Connection = function(opts) {
   if(opts.loginUri.length === 0) throw new Error('invalid or missing loginUri');
   if(opts.testLoginUri.length === 0) throw new Error('invalid or missing testLoginUri');
   if((opts.gzip !== false) && (opts.gzip !== true)) throw new Error('gzip must be a boolean');
-  // Need to add sandbox to this IF
-  // if((opts.environment.toLowerCase() !== 'production')) {
-  //   throw new Error('invalid environment, only production and sandbox are allowed');
-  // }
-  // if(!_.isString(this.mode) || _.indexOf(MODES, this.mode) === -1) {
-  //   throw new Error('invalid mode, only ' + MODES.join(' and ') + ' are allowed');
-  // }
-  // if(this.onRefresh && !_.isFunction(this.onRefresh)) throw new Error('onRefresh must be a function');
-  // if(this.timeout && !_.isNumber(this.timeout)) throw new Error('timeout must be a number');
+  if((opts.environment.toLowerCase() !== 'production') && (opts.environment.toLowerCase() !== 'sandbox')) throw new Error('invalid environment, only production and sandbox are allowed');
+  if((opts.mode !== 'multi') && (opts.mode !== 'single')) throw new Error('invalid mode, only single and multi are allowed');
+  if((opts.onRefresh) && (typeof opts.onRefresh !== "function")) throw new Error('onRefresh must be a function');
+  if((opts.timeout) && (isNaN(opts.timeout))) throw new Error('timeout must be a number');
 
-  // // parse api version
-  // try {
-  //   this.apiVersion = 'v' + parseInt(this.apiVersion, 10) + '.0';
-  // } catch (err) {
-  //   throw new Error('invalid apiVersion number');
-  // }
-  // if(API_VERSIONS.indexOf(this.apiVersion) === -1) {
-  //   throw new Error('api version ' + this.apiVersion + ' is not supported');
-  // }
-  //
-  // // parse timeout into integer in case it's a floating point.
-  // this.timeout = parseInt(this.timeout, 10);
-  //
-  // // load plugins
-  // if(opts.plugins && _.isArray(opts.plugins)) {
-  //   opts.plugins.forEach(function(pname) {
-  //     if(!plugins[pname]) throw new Error('plugin ' + pname + ' not found');
-  //     // clone the object
-  //     self[pname] = _.clone(plugins[pname]._fns);
-  //
-  //     // now bind to the connection object
-  //     _.forOwn(self[pname], function(fn, key) {
-  //       self[pname][key] = _.bind(self[pname][key], self);
-  //     });
-  //   });
-  // }
+  // parse api version
+  try {
+    opts.apiVersion = 'v' + parseInt(opts.apiVersion) + '.0';
+  } catch (err) {
+    throw new Error('invalid apiVersion number');
+  }
+  if(API_VERSIONS.indexOf(opts.apiVersion) === -1) {
+    throw new Error('api version ' + opts.apiVersion + ' is not supported');
+  }
+
+  // parse timeout into integer in case it's a floating point.
+  opts.timeout = parseInt(opts.timeout, 10);
 };
-
-// Calling the connection function for debuging reasons
-// Remove once complete
-Connection();
